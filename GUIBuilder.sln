@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2035
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GUIBuilderForm", "GUIBuilderForm\GUIBuilderForm.csproj", "{4E73F8F5-3674-4504-9952-E4A5F9A511BF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GUIBuilder", "GUIBuilder\GUIBuilder.csproj", "{BF64AE9E-3922-4EE8-BA9C-60F00DC17B9D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4E73F8F5-3674-4504-9952-E4A5F9A511BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E73F8F5-3674-4504-9952-E4A5F9A511BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E73F8F5-3674-4504-9952-E4A5F9A511BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E73F8F5-3674-4504-9952-E4A5F9A511BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF64AE9E-3922-4EE8-BA9C-60F00DC17B9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF64AE9E-3922-4EE8-BA9C-60F00DC17B9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF64AE9E-3922-4EE8-BA9C-60F00DC17B9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF64AE9E-3922-4EE8-BA9C-60F00DC17B9D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {282F2736-4518-446A-9E82-DE55190CD883}
+	EndGlobalSection
+EndGlobal
