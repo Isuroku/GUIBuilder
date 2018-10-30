@@ -28,12 +28,12 @@ namespace GUIBuilderForm
     {
         Panel _panel;
 
-        public CWFPanel(CWFNode inParent, string inName, EWindowType inWindowType) : base(inParent, inName, inWindowType)
+        public CWFPanel(CWFNode inParent, string inName) : base(inParent, inName, EWindowType.Panel)
         {
             _panel = new Panel();
             _panel.Parent = inParent.WFControl;
             _panel.Location = new Point(0, 0);
-            _panel.Name = "w";
+            _panel.Name = inName;
             _panel.Size = new Size(45, 36);
             _panel.BackColor = Color.Green;
             _panel.ForeColor = Color.Yellow;
@@ -46,6 +46,16 @@ namespace GUIBuilderForm
             _panel = null;
 
             base.Dispose();
+        }
+
+        protected override void OnChangeParam(EWindowParams inParamType, CBaseParam inNewParam)
+        {
+            base.OnChangeParam(inParamType, inNewParam);
+
+            if(inParamType == EWindowParams.Name)
+            {
+                _panel.Name = inNewParam.ToString();
+            }
         }
     }
 }

@@ -110,7 +110,7 @@ namespace GUIBuilderForm
             if (lbSourceFiles.Items.Count > 0)
                 lbSourceFiles.SelectedIndex = 0;
 
-            _builder = new CGUIBuilder<CGUIData>(this, this, this, new CWFNode(null, null, pnlWindow));
+            _builder = new CGUIBuilder<CGUIData>(this, this, new CWFNode(null, null, pnlWindow));
         }
 
         public string GetTextFromFile(string inFileName, object inContextData)
@@ -231,7 +231,7 @@ namespace GUIBuilderForm
             {
                 case Keys.F5:
 
-                _builder.Build(Path.GetFileName(_selected_file), tbSourceText.Text);
+                _builder.Build(Path.GetFileName(_selected_file), tbSourceText.Text, this);
                 ShowTokenLines(_builder.LastBuildKey);
                 AddToTree(_builder.LastBuildKey);
 
@@ -243,7 +243,7 @@ namespace GUIBuilderForm
 
         public CBaseWindow CreateWindow(CNode inParent, string inName, EWindowType inWindowType)
         {
-            return new CWFPanel((CWFNode)inParent, inName, inWindowType);
+            return new CWFPanel((CWFNode)inParent, inName);
         }
 
         public void DeleteWindow(CBaseWindow inWindow)

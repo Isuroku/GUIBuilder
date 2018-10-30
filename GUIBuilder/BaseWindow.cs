@@ -21,13 +21,13 @@ namespace GUIBuilder
         Dictionary<EWindowParams, CBaseParam> _params = new Dictionary<EWindowParams, CBaseParam>();
 
         public string Name { get { return _params[EWindowParams.Name].ToString(); } }
-        public EWindowType WindowType { get { return _params[EWindowParams.WindowType].ToWindowType(); } }
+        public EWindowType WindowType { get { return _params[EWindowParams.Type].ToWindowType(); } }
 
         public CBaseWindow(CNode inParent, string inName, EWindowType inWindowType)
         {
             _node = new CNode(this, inParent);
             _params.Add(EWindowParams.Name, new CStringParam(inName));
-            _params.Add(EWindowParams.WindowType, new CWindowTypeParam(inWindowType));
+            _params.Add(EWindowParams.Type, new CWindowTypeParam(inWindowType));
         }
 
         public override string ToString()
@@ -35,10 +35,18 @@ namespace GUIBuilder
             return string.Format("{0} [{1}]", Name, WindowType);
         }
 
-        internal void Change(IKey inKey)
+        internal void Change(SWinKeyInfo inKeyInfo)
         {
-            
+            CStringParam p = (CStringParam)_params[EWindowParams.Name];
+            if (!string.Equals(p.ToString(), inKeyInfo.Name))
+            {
+                p.SetValue(inKeyInfo.Name);
+
+                OnChangeParam(EWindowParams.Name, p);
+            }
         }
+
+        protected virtual void OnChangeParam(EWindowParams inParamType, CBaseParam inNewParam) { }
 
         public virtual void Dispose()
         {
@@ -51,6 +59,27 @@ namespace GUIBuilder
             _node.Dispose();
 
             IsDisposed = true;
+        }
+
+        void CheckParam(EWindowParams inParam, IKey inKey)
+        {
+            if(inParam == EWindowParams.Name)
+                CheckStringParam(inParam, inKey.GetName());
+        }
+
+        void CheckStringParam(EWindowParams inParam, string inNewValue)
+        {
+            CBaseParam val;
+            string old_value = string.Empty;
+            if (_params.TryGetValue(inParam, out val))
+            {
+                old_value = val.ToString();
+
+                if (!string.Equals(old_value, inNewValue, StringComparison.Ordinal))
+                    val.SetValue(inNewValue);
+            }
+            else
+                _params.Add(inParam, new CStringParam(inNewValue));
         }
     }
 }

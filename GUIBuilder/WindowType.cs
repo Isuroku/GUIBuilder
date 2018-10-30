@@ -8,6 +8,9 @@ namespace GUIBuilder
     public enum EWindowType
     {
         Undefined,
-        Panel
+        Panel,
+        Label,
+        TextEditor,
+        Button
     }
 }
