@@ -28,7 +28,8 @@ namespace GUIBuilder
         {
             Id = ++_id_counter;
 
-            Parent = inParent;
+            SetParent(inParent);
+
             _params.Add(EWindowParams.Name, new CStringParam(inName));
             _params.Add(EWindowParams.Type, new CWindowTypeParam(inWindowType));
             _params.Add(EWindowParams.Pivot_By_Parent, new CPVectorParam(new PVector2(inBaseRect.left, inBaseRect.top)));
@@ -60,6 +61,26 @@ namespace GUIBuilder
             Parent = null;
 
             IsDisposed = true;
+        }
+
+        void SetParent(CBaseWindow inParent)
+        {
+            if (inParent != null)
+            {
+                if (Parent == inParent)
+                    return;
+
+                if (Parent != null)
+                    Parent.RemoveChild(this);
+
+                Parent = inParent;
+                Parent.AddChild(this);
+            }
+            else if(Parent != null)
+            {
+                Parent.RemoveChild(this);
+                Parent = null;
+            }
         }
 
         private void AddChild(CBaseWindow inNode)
@@ -307,6 +328,35 @@ namespace GUIBuilder
         public Rect GetClientRect()
         {
             return GetRect();
+        }
+
+        internal void Build(IKey inChildsKey, ILogPrinter inLogger)
+        {
+            SWinKeyInfo[] keys = Utils.GetWinKeyInfos(inChildsKey, inLogger);
+
+            List<CBaseWindow> unused_windows_cache = new List<CBaseWindow>(_childs);
+            List<CBaseWindow> new_childs = new List<CBaseWindow>();
+
+            for (int i = 0; i < keys.Length; i++)
+            {
+                SWinKeyInfo window_key_info = keys[i];
+
+                CBaseWindow window = Utils.FindMostSuitableWindow(unused_windows_cache, window_key_info);
+                if (window == null)
+                    window = new CBaseWindow(this, window_key_info.Name, window_key_info.WinType, new Rect(0, 0, 10, 10), _gui_realization);
+                else
+                    unused_windows_cache.Remove(window);
+
+                new_childs.Add(window);
+
+                window.Change(window_key_info, inLogger);
+            }
+
+            for (int i = 0; i < unused_windows_cache.Count; i++)
+                unused_windows_cache[i].Dispose();
+
+            _childs.Clear();
+            _childs = new_childs;
         }
     }
 }

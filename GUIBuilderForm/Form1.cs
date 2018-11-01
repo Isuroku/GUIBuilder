@@ -134,6 +134,11 @@ namespace GUIBuilderForm
 
         private void tbSourceText_Leave(object sender, EventArgs e)
         {
+            SaveCurrentText();
+        }
+
+        private void SaveCurrentText()
+        {
             if (string.IsNullOrEmpty(tbSourceText.Text) ||
                 string.IsNullOrEmpty(_selected_file))
                 return;
@@ -233,6 +238,8 @@ namespace GUIBuilderForm
             switch (keyData)
             {
                 case Keys.F5:
+
+                SaveCurrentText();
 
                 _builder.Build(Path.GetFileName(_selected_file), tbSourceText.Text, this);
                 ShowTokenLines(_builder.LastBuildKey);

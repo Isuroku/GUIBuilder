@@ -23,13 +23,14 @@ namespace GUIBuilder
                 outList.Add(key.GetChild(i));
         }
 
-        public static int FindChildIndex(this IKey key, IKey child)
+        public static int FindChildIndex(this IKey key, IKey child, ILogPrinter inLogger)
         {
             for (int i = 0; i < key.GetChildCount(); i++)
             {
                 if (key.GetChild(i) == child)
                     return i;
             }
+            inLogger.LogError(string.Format("Can't FindChildIndex"));
             return -1;
         }
 
@@ -61,6 +62,84 @@ namespace GUIBuilder
         {
             string[] a = Utils.TryGetParamsBySubKeyName("Name", inKey, inLogger, false, 1);
             return a.Empty() ? inDefaultName : a[0];
+        }
+
+        public static SWinKeyInfo[] GetWinKeyInfos(IKey inWinKeyParent, ILogPrinter inLogger)
+        {
+            int count = inWinKeyParent.GetChildCount();
+            List<SWinKeyInfo> res = new List<SWinKeyInfo>(count);
+            for (int i = 0; i < count; i++)
+            {
+                IKey window_key = inWinKeyParent.GetChild(i);
+
+                var info = new SWinKeyInfo();
+
+                info.WinKey = window_key;
+
+                info.Name = Utils.GetWindowNameFromKey(window_key, i.ToString(), inLogger);
+
+                string[] a = Utils.TryGetParamsBySubKeyName("Type", window_key, inLogger, true, 1);
+                if (a.Length > 0)
+                {
+                    string stype = a[0];
+                    EWindowType wt = EnumUtils.ToEnum(stype, EWindowType.Undefined);
+                    if (wt != EWindowType.Undefined)
+                    {
+                        info.WinType = wt;
+                        res.Add(info);
+                    }
+                    else
+                        inLogger.LogError(string.Format("Undefined type. Key [{0}]!", window_key.GetPath()));
+                }
+            }
+            return res.ToArray();
+        }
+
+        public static SWinKeyInfo FindMostSuitableKey(SWinKeyInfo[] inKeys, string inName, EWindowType inWindowType, ILogPrinter inLogger)
+        {
+            int min_dist = int.MaxValue;
+            SWinKeyInfo res_key = new SWinKeyInfo();
+
+            for (int i = 0; i < inKeys.Length; i++)
+            {
+                SWinKeyInfo window_key_info = inKeys[i];
+
+                if (inWindowType == window_key_info.WinType)
+                {
+                    int d = LevenshteinDistance.GetDistance(window_key_info.Name, inName, 10);
+                    if (d < min_dist)
+                    {
+                        min_dist = d;
+                        res_key = window_key_info;
+                    }
+                }
+            }
+
+            return res_key;
+        }
+
+        public static CBaseWindow FindMostSuitableWindow(List<CBaseWindow> unused_windows_cache, SWinKeyInfo inKeyInfo)
+        {
+            int priority = int.MaxValue;
+            CBaseWindow sel_window = null;
+
+            for (int i = 0; i < unused_windows_cache.Count; i++)
+            {
+                CBaseWindow window = unused_windows_cache[i];
+
+                if (window.WindowType == inKeyInfo.WinType)
+                {
+                    int dist = LevenshteinDistance.GetDistance(window.Name, inKeyInfo.Name);
+
+                    if (dist < priority)
+                    {
+                        sel_window = window;
+                        priority = dist;
+                    }
+                }
+            }
+
+            return sel_window;
         }
     }
 }
