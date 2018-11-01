@@ -144,6 +144,10 @@ namespace GUIBuilder
                     }
                 }
             });
+
+            IKey childs_key = inKeyInfo.WinKey.FindChildByName("Childs", StringComparison.InvariantCultureIgnoreCase);
+            if (childs_key != null)
+                Build(childs_key, inLogger);
         }
 
         #region StringParam
