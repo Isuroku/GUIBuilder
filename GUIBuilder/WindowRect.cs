@@ -7,34 +7,63 @@ namespace GUIBuilder
 {
     class CWindowRect
     {
-        Anchor _anchor = new Anchor();
+        PVector2 _pivot_by_parent;
+        PVector2 _pivot_in_own_rect;
+        PVector2 _size;
 
-        Rect _rect;
-
-        ESizeType _size_type;
-
+        //return global rect
         public Rect GetRect(IFrame inParent)
         {
-            Rect anchor_rect = _anchor.GetRect(inParent);
+            Rect parent_rect;
+            if(inParent != null)
+                parent_rect = inParent.GetClientRect(); //global rect
+            else
+                parent_rect = new Rect();
 
-            float l = _rect.GetSizeInUnits(0, _size_type, anchor_rect);
-            l = anchor_rect.left + l;
-            float t = _rect.GetSizeInUnits(1, _size_type, anchor_rect);
-            t = anchor_rect.top + t;
+            Vector2 parent_shift = _pivot_by_parent.GetVector(parent_rect);
 
-            float r = 0;
-            if (_anchor.AnchorWidthType == EAnchorDimType.Point)
-                r = l + _rect.GetWidthInUnits(_size_type, anchor_rect);
-            else if (_anchor.AnchorWidthType == EAnchorDimType.Strech)
-                r = anchor_rect.right + _rect.GetSizeInUnits(2, _size_type, anchor_rect);
+            Vector2 c = parent_rect.Min + parent_shift; //global pos
 
-            float b = 0;
-            if (_anchor.AnchorHightType == EAnchorDimType.Point)
-                b = t + _rect.GetHeightInUnits(_size_type, anchor_rect);
-            else if (_anchor.AnchorHightType == EAnchorDimType.Strech)
-                r = anchor_rect.bottom + _rect.GetSizeInUnits(3, _size_type, anchor_rect);
+            Vector2 sz = _size.GetVector(parent_rect);
 
-            return new Rect(l, t, r, b);
+            Vector2 own_shift = _pivot_in_own_rect.GetVector(sz);
+
+            Vector2 lt = c - own_shift;
+
+            return new Rect(lt.x, lt.y, lt.x + sz.x, lt.y + sz.y);
         }
     }
+
+    //class CWindowRect
+    //{
+    //    Anchor _anchor = new Anchor();
+
+    //    Rect _rect;
+
+    //    ESizeType _size_type;
+
+    //    public Rect GetRect(IFrame inParent)
+    //    {
+    //        Rect anchor_rect = _anchor.GetRect(inParent);
+
+    //        float l = _rect.GetSizeInUnits(0, _size_type, anchor_rect);
+    //        l = anchor_rect.left + l;
+    //        float t = _rect.GetSizeInUnits(1, _size_type, anchor_rect);
+    //        t = anchor_rect.top + t;
+
+    //        float r = 0;
+    //        if (_anchor.AnchorWidthType == EAnchorDimType.Point)
+    //            r = l + _rect.GetWidthInUnits(_size_type, anchor_rect);
+    //        else if (_anchor.AnchorWidthType == EAnchorDimType.Strech)
+    //            r = anchor_rect.right + _rect.GetSizeInUnits(2, _size_type, anchor_rect);
+
+    //        float b = 0;
+    //        if (_anchor.AnchorHightType == EAnchorDimType.Point)
+    //            b = t + _rect.GetHeightInUnits(_size_type, anchor_rect);
+    //        else if (_anchor.AnchorHightType == EAnchorDimType.Strech)
+    //            r = anchor_rect.bottom + _rect.GetSizeInUnits(3, _size_type, anchor_rect);
+
+    //        return new Rect(l, t, r, b);
+    //    }
+    //}
 }

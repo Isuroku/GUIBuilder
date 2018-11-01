@@ -11,13 +11,15 @@ using System.Windows.Forms;
 
 namespace GUIBuilderForm
 {
-    public partial class Form1 : Form, ILogPrinter, IParserOwner, IGUIFactory
+    public partial class Form1 : Form, ILogPrinter, IParserOwner
     {
         const string _path_to_data = "Data";
 
         string _selected_file;
 
-        CGUIBuilder<CGUIData> _builder;
+        CGUIBuilder _builder;
+
+        CGUIRealization _gui;
 
         public Form1()
         {
@@ -110,7 +112,8 @@ namespace GUIBuilderForm
             if (lbSourceFiles.Items.Count > 0)
                 lbSourceFiles.SelectedIndex = 0;
 
-            _builder = new CGUIBuilder<CGUIData>(this, this, new CWFNode(null, null, pnlWindow));
+            _gui = new CGUIRealization(pnlWindow);
+            _builder = new CGUIBuilder(this, _gui, new Rect(0, 0, pnlWindow.Width, pnlWindow.Height));
         }
 
         public string GetTextFromFile(string inFileName, object inContextData)
@@ -239,16 +242,6 @@ namespace GUIBuilderForm
                 break;
             }
             return bHandled;
-        }
-
-        public CBaseWindow CreateWindow(CNode inParent, string inName, EWindowType inWindowType)
-        {
-            return new CWFPanel((CWFNode)inParent, inName);
-        }
-
-        public void DeleteWindow(CBaseWindow inWindow)
-        {
-
         }
     }
 }

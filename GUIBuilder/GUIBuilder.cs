@@ -5,28 +5,30 @@ using System.Text;
 
 namespace GUIBuilder
 {
-    public interface IGUIFactory
+    public interface IGUIRealization
     {
-        CBaseWindow CreateWindow(CNode inParent, string inName, EWindowType inWindowType);
+        void OnCreateWindow(CBaseWindow window);
+        void OnDeleteWindow(CBaseWindow window);
+        void OnWindowChange(CBaseWindow window, EWindowParams inParamType, CBaseParam inNewParam);
     }
 
-    public class CGUIBuilder<T>
+    public class CGUIBuilder
     {
         CParserManager _parser;
         public CParserManager Parser { get { return _parser; } }
 
         public IKey LastBuildKey { get; private set; }
 
-        IGUIFactory _factory;
-        CNode _root;
+        IGUIRealization _gui_realization;
+        CBaseWindow _root;
 
         List<CBaseWindow> _windows = new List<CBaseWindow>();
 
-        public CGUIBuilder(IParserOwner inParserOwner, IGUIFactory inGUIFactory, CNode Root)
+        public CGUIBuilder(IParserOwner inParserOwner, IGUIRealization inGUIRealization, Rect inBaseRect)
         {
             _parser = new CParserManager(inParserOwner);
-            _factory = inGUIFactory;
-            _root = Root;
+            _gui_realization = inGUIRealization;
+            _root = new CBaseWindow(null, "MainFrame", EWindowType.Panel, inBaseRect, _gui_realization);
         }
 
         SWinKeyInfo[] GetWinKeyInfos(IKey inWinKeyParent, ILogPrinter inLogger)
@@ -78,7 +80,7 @@ namespace GUIBuilder
 
                 if (window_key_info.WinKey != null)
                 {
-                    window.Change(window_key_info);
+                    window.Change(window_key_info, inLogger);
                     child_cache.RemoveAll(el => el.WinKey == window_key_info.WinKey);
                 }
                 else
@@ -94,12 +96,11 @@ namespace GUIBuilder
 
                 CBaseWindow window = FindMostSuitableWindow(unused_windows_cache, window_key_info);
                 if (window == null)
-                    window = _factory.CreateWindow(_root, window_key_info.Name, window_key_info.WinType);
+                    window = new CBaseWindow(_root, window_key_info.Name, window_key_info.WinType, new Rect(0, 0, 10, 10), _gui_realization);
                 else
-                {
-                    window.Change(window_key_info);
                     unused_windows_cache.Remove(window);
-                }
+
+                window.Change(window_key_info, inLogger);
 
                 int index = LastBuildKey.FindChildIndex(window_key_info.WinKey);
                 if (index != -1)

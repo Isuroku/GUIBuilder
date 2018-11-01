@@ -51,6 +51,8 @@
     <Compile Include="LevenshteinDistance.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PValue.cs" />
+    <Compile Include="PVector2.cs" />
     <Compile Include="Rect.cs" />
     <Compile Include="SWinKeyInfo.cs" />
     <Compile Include="Tuple.cs" />
