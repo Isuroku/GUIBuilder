@@ -16,10 +16,19 @@ namespace GUIBuilderForm
         public CGUIRealization(Panel panel)
         {
             _panel = panel;
+            _controls.Add(uint.MaxValue, panel);
         }
 
-        public void OnCreateWindow(CBaseWindow window)
+        internal void SetBuilder(CGUIBuilder builder)
         {
+            builder.WindowTypeDescrs.AddType(WindowTypes.Panel);
+        }
+
+        public void OnCreateWindow(IBaseWindow window)
+        {
+            if (window.WindowType.Id == uint.MaxValue)
+                return;
+
             var panel = new Panel();
 
             Control pc;
@@ -30,7 +39,7 @@ namespace GUIBuilderForm
 
             panel.Name = window.Name;
 
-            Rect rect = window.GetRect();
+            Rect rect = window.GetRect(true);
             panel.Location = new Point((int)rect.left, (int)rect.top);
             panel.Size = new Size((int)rect.Width, (int)rect.Hight);
 
@@ -40,8 +49,11 @@ namespace GUIBuilderForm
             _controls.Add(window.Id, panel);
         }
 
-        public void OnDeleteWindow(CBaseWindow window)
+        public void OnDeleteWindow(IBaseWindow window)
         {
+            if (window.WindowType.Id == uint.MaxValue)
+                return;
+
             Control pc;
             if (!_controls.TryGetValue(window.Id, out pc))
                 return;
@@ -52,31 +64,31 @@ namespace GUIBuilderForm
             pc.Dispose();
         }
 
-        public void OnWindowChange(CBaseWindow window, EWindowParams inParamType, CBaseParam inNewParam)
+        public void OnWindowChange(IBaseWindow window, NamedId inParamType, CBaseParam inNewParam)
         {
             Control pc;
             if (!_controls.TryGetValue(window.Id, out pc))
                 return;
 
-            switch (inParamType)
+            if(inParamType == SWindowParamDescr.Name.Id)
             {
-                case EWindowParams.Name: pc.Name = inNewParam.ToString(); break;
-                case EWindowParams.Pivot_By_Parent:
-                case EWindowParams.Pivot_In_Own_Rect:
-                case EWindowParams.Size:
-                {
-                    Rect rect = window.GetRect();
-                    pc.Location = new Point((int)rect.left, (int)rect.top);
-                    pc.Size = new Size((int)rect.Width, (int)rect.Hight);
-                }
-                break;
-                case EWindowParams.Color:
-                {
-                    Vector4 v4 = inNewParam.ToVector4();
-                    pc.BackColor = Color.FromArgb((int)v4.w, (int)v4.x, (int)v4.y, (int)v4.z);
-                }
-                break;
+                pc.Name = inNewParam.ToString();
+            }
+            else if(inParamType == SWindowParamDescr.Indent.Id
+                    || inParamType == SWindowParamDescr.Shift.Id
+                    || inParamType == SWindowParamDescr.Size.Id)
+            {
+                Rect rect = window.GetRect(true);
+                pc.Location = new Point((int)rect.left, (int)rect.top);
+                pc.Size = new Size((int)rect.Width, (int)rect.Hight);
+            }
+            else if (inParamType == SWindowParamDescr.Color.Id)
+            {
+                Vector4 v4 = inNewParam.ToVector4();
+                pc.BackColor = Color.FromArgb((int)v4.w, (int)v4.x, (int)v4.y, (int)v4.z);
             }
         }
+
+        
     }
 }

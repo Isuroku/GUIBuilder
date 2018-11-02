@@ -114,6 +114,7 @@ namespace GUIBuilderForm
 
             _gui = new CGUIRealization(pnlWindow);
             _builder = new CGUIBuilder(this, _gui, new Rect(0, 0, pnlWindow.Width, pnlWindow.Height));
+            _gui.SetBuilder(_builder);
         }
 
         public string GetTextFromFile(string inFileName, object inContextData)

@@ -42,14 +42,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Anchor.cs" />
     <Compile Include="ArrayExt.cs" />
     <Compile Include="BaseWindow.cs" />
     <Compile Include="EnumUtils.cs" />
     <Compile Include="GUIBuilder.cs" />
-    <Compile Include="IFrame.cs" />
     <Compile Include="LevenshteinDistance.cs" />
-    <Compile Include="Node.cs" />
+    <Compile Include="NamedId.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PValue.cs" />
     <Compile Include="PVector2.cs" />
@@ -59,8 +57,7 @@
     <Compile Include="Utils.cs" />
     <Compile Include="Vector2.cs" />
     <Compile Include="WindowParams.cs" />
-    <Compile Include="WindowRect.cs" />
-    <Compile Include="WindowType.cs" />
+    <Compile Include="WindowTypeDescr.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

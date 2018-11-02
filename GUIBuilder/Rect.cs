@@ -68,34 +68,5 @@ namespace GUIBuilder
             return !(aabb1.left > point.x || aabb1.right < point.x
                      || aabb1.top > point.y || aabb1.bottom < point.y);
         }
-
-        public float GetSizeInUnits(int inSizeIndex, ESizeType inSizeType, Rect inParentRect)
-        {
-            float l = this[inSizeIndex];
-            if (inSizeType == ESizeType.Percents)
-            {
-                if (inSizeIndex == 0 || inSizeIndex == 2)
-                    l = inParentRect.Width * l;
-                else
-                    l = inParentRect.Hight * l;
-            }
-            return l;
-        }
-
-        public float GetWidthInUnits(ESizeType inSizeType, Rect inParentRect)
-        {
-            float l = Width;
-            if (inSizeType == ESizeType.Percents)
-                l = inParentRect.Width * l;
-            return l;
-        }
-
-        public float GetHeightInUnits(ESizeType inSizeType, Rect inParentRect)
-        {
-            float l = Hight;
-            if (inSizeType == ESizeType.Percents)
-                l = inParentRect.Hight * l;
-            return l;
-        }
     }
 }

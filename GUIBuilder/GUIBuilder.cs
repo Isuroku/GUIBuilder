@@ -7,9 +7,9 @@ namespace GUIBuilder
 {
     public interface IGUIRealization
     {
-        void OnCreateWindow(CBaseWindow window);
-        void OnDeleteWindow(CBaseWindow window);
-        void OnWindowChange(CBaseWindow window, EWindowParams inParamType, CBaseParam inNewParam);
+        void OnCreateWindow(IBaseWindow window);
+        void OnDeleteWindow(IBaseWindow window);
+        void OnWindowChange(IBaseWindow window, NamedId inParamType, CBaseParam inNewParam);
     }
 
     public class CGUIBuilder
@@ -20,15 +20,17 @@ namespace GUIBuilder
         public IKey LastBuildKey { get; private set; }
 
         IGUIRealization _gui_realization;
+
         CBaseWindow _root;
 
-        List<CBaseWindow> _windows = new List<CBaseWindow>();
+        CWindowTypeDescrs _window_type_descrs = new CWindowTypeDescrs();
+        public CWindowTypeDescrs WindowTypeDescrs { get { return _window_type_descrs; } }
 
         public CGUIBuilder(IParserOwner inParserOwner, IGUIRealization inGUIRealization, Rect inBaseRect)
         {
             _parser = new CParserManager(inParserOwner);
             _gui_realization = inGUIRealization;
-            _root = new CBaseWindow(null, "MainFrame", EWindowType.Panel, inBaseRect, _gui_realization);
+            _root = new CBaseWindow(null, "MainFrame", new NamedId(uint.MaxValue, "MainFrame"), inBaseRect, _gui_realization, _window_type_descrs);
         }
 
         public void Build(string inFileName, string inText, ILogPrinter inLogger, object inContextData = null)

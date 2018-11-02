@@ -6,7 +6,7 @@ namespace GUIBuilder
     {
         public IKey WinKey;
         public string Name;
-        public EWindowType WinType;
+        public NamedId WinType;
 
         public override string ToString()
         {
