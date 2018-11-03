@@ -20,7 +20,8 @@ namespace GUIBuilder
         Float,
         Bool,
         PVector2,
-        Vector4
+        Vector4,
+        Color
     }
 
     public abstract class CBaseParam
@@ -31,24 +32,28 @@ namespace GUIBuilder
         public virtual bool         ToBool()                    { throw new NotImplementedException(); }
         public virtual PVector2     ToPVector2()                { throw new NotImplementedException(); }
         public virtual Vector4      ToVector4()                 { throw new NotImplementedException(); }
+        public virtual SColor        ToColor()                   { throw new NotImplementedException(); }
 
         public virtual bool SetValue(string inNewValue)         { throw new NotImplementedException(); }
         public virtual bool SetValue(float inNewValue)          { throw new NotImplementedException(); }
         public virtual bool SetValue(bool inNewValue)           { throw new NotImplementedException(); }
         public virtual bool SetValue(PVector2 inNewValue)       { throw new NotImplementedException(); }
         public virtual bool SetValue(Vector4 inNewValue)        { throw new NotImplementedException(); }
+        public virtual bool SetValue(SColor inNewValue)          { throw new NotImplementedException(); }
 
         public virtual bool SetValue(string[] inNewValue)       { throw new NotImplementedException(); }
 
         static int[] pcount_1 = { 1 };
         static int[] pcount_2 = { 2 };
         static int[] pcount_3_4 = { 3, 4 };
+        static int[] pcount_4 = { 4 };
 
         public static int[] GetParamCount(EBaseParamType inParamType)
         {
             switch(inParamType)
             {
-                case EBaseParamType.Vector4: return pcount_3_4;
+                case EBaseParamType.Vector4: return pcount_4;
+                case EBaseParamType.Color: return pcount_3_4;
                 case EBaseParamType.PVector2: return pcount_2;
             }
             return pcount_1;
@@ -60,6 +65,7 @@ namespace GUIBuilder
 
             switch (inParamType)
             {
+                case EBaseParamType.Color: p = new CColorParam(); break;
                 case EBaseParamType.Vector4: p = new CVector4Param(); break;
                 case EBaseParamType.PVector2: p = new CPVectorParam(); break;
                 case EBaseParamType.Float: p = new CFloatParam(); break;
@@ -161,6 +167,43 @@ namespace GUIBuilder
             {
                 if (float.TryParse(inNewValue[0], out x) && float.TryParse(inNewValue[1], out y) && float.TryParse(inNewValue[2], out z))
                     return SetValue(new Vector4(x, y, z, 255));
+            }
+
+            return false;
+        }
+    }
+
+    public class CColorParam : CBaseParam
+    {
+        SColor _value;
+
+        public override string ToString() { return _value.ToString(); }
+        public override EBaseParamType GetParamType() { return EBaseParamType.Color; }
+        public override SColor ToColor() { return _value; }
+        public CColorParam() { }
+        public CColorParam(SColor value) { _value = value; }
+
+        public override bool SetValue(SColor inNewValue)
+        {
+            bool diff = _value != inNewValue;
+            if (diff)
+                _value = inNewValue;
+            return diff;
+        }
+
+        public override bool SetValue(string[] inNewValue)
+        {
+            byte r, g, b, a = 0;
+            if (inNewValue.Length > 3)
+            {
+                if (byte.TryParse(inNewValue[0], out r) && byte.TryParse(inNewValue[1], out g)
+                    && byte.TryParse(inNewValue[2], out b) && byte.TryParse(inNewValue[3], out a))
+                    return SetValue(new SColor(r, g, b, a));
+            }
+            else if (inNewValue.Length > 2)
+            {
+                if (byte.TryParse(inNewValue[0], out r) && byte.TryParse(inNewValue[1], out g) && byte.TryParse(inNewValue[2], out b))
+                    return SetValue(new SColor(r, g, b, 255));
             }
 
             return false;

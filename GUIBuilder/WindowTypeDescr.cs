@@ -53,7 +53,7 @@ namespace GUIBuilder
         public static SWindowParamDescr Indent = new SWindowParamDescr(uint.MaxValue - 2, "Indent", EBaseParamType.PVector2, true);
         public static SWindowParamDescr Shift = new SWindowParamDescr(uint.MaxValue - 3, "Shift", EBaseParamType.PVector2, true);
         public static SWindowParamDescr Size = new SWindowParamDescr(uint.MaxValue - 4, "Size", EBaseParamType.PVector2, true);
-        public static SWindowParamDescr Color = new SWindowParamDescr(uint.MaxValue - 5, "Color", EBaseParamType.Vector4, false);
+        public static SWindowParamDescr Color = new SWindowParamDescr(uint.MaxValue - 5, "Color", EBaseParamType.Color, false);
     }
 
     public class CWindowTypeDescr: IEnumerable<SWindowParamDescr>

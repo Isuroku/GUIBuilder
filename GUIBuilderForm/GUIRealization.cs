@@ -25,6 +25,9 @@ namespace GUIBuilderForm
 
             WindowTypes.Label.AddParams(WindowParams.Text, true);
             builder.WindowTypeDescrs.AddType(WindowTypes.Label);
+
+            WindowTypes.TextBox.AddParams(WindowParams.Text, false);
+            builder.WindowTypeDescrs.AddType(WindowTypes.TextBox);
         }
 
         public void OnCreateWindow(IBaseWindow window)
@@ -76,15 +79,12 @@ namespace GUIBuilderForm
             }
             else if (inParamType == SWindowParamDescr.Color.Id)
             {
-                Vector4 v4 = inNewParam.ToVector4();
-                pc.BackColor = Color.FromArgb((int)v4.w, (int)v4.x, (int)v4.y, (int)v4.z);
+                SColor clr = inNewParam.ToColor();
+                pc.BackColor = Color.FromArgb(clr.a, clr.r, clr.g, clr.b);
             }
             else if (inParamType == WindowParams.Text.Id)
             {
-                if (window.WindowType == WindowTypes.Label.Id)
-                {
-                    pc.Text = inNewParam.ToString();
-                }
+                pc.Text = inNewParam.ToString();
             }
         }
 

@@ -13,6 +13,7 @@ namespace GUIBuilderForm
     {
         public static CWindowTypeDescr Panel = new CWindowTypeDescr(0, "Panel");
         public static CWindowTypeDescr Label = new CWindowTypeDescr(1, "Label");
+        public static CWindowTypeDescr TextBox = new CWindowTypeDescr(2, "TextBox");
     }
 
     static class WindowFactory
@@ -25,6 +26,8 @@ namespace GUIBuilderForm
                 res = new Panel();
             else if (window.WindowType == WindowTypes.Label.Id)
                 res = new Label();
+            else if (window.WindowType == WindowTypes.TextBox.Id)
+                res = new TextBox();
 
             res.Parent = parent;
             res.Name = window.Name;

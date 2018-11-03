@@ -110,39 +110,34 @@ namespace GUIBuilder
             _childs.Remove(inNode);
         }
 
+        void OnWindowChange(SWindowParamDescr inParamDescr, CBaseParam inNewVal)
+        {
+            _gui_realization.OnWindowChange(this, inParamDescr.Id, inNewVal);
+
+            if (inParamDescr.IsChildInfluence)
+            {
+                for (int i = 0; i < _childs.Count; ++i)
+                {
+                    CBaseParam child_val = _childs[i].GetParamValue(inParamDescr.Id);
+                    _gui_realization.OnWindowChange(_childs[i], inParamDescr.Id, child_val);
+                }
+            }
+        }
+
         void CheckParam(SWindowParamDescr inParamDescr, string[] inNewValue)
         {
             CBaseParam val;
             if (_params.TryGetValue(inParamDescr.Id, out val))
             {
                 if (val.SetValue(inNewValue))
-                {
-                    _gui_realization.OnWindowChange(this, inParamDescr.Id, val);
-
-                    if (inParamDescr.IsChildInfluence)
-                    {
-                        for (int i = 0; i < _childs.Count; ++i)
-                        {
-                            CBaseParam child_val = _childs[i].GetParamValue(inParamDescr.Id);
-                            _gui_realization.OnWindowChange(_childs[i], inParamDescr.Id, child_val);
-                        }
-                    }
-                }
+                    OnWindowChange(inParamDescr, val);
             }
             else
             {
                 val = CBaseParam.CreateParam(inParamDescr.ParamType, inNewValue);
                 _params.Add(inParamDescr.Id, val);
-                _gui_realization.OnWindowChange(this, inParamDescr.Id, val);
 
-                if (inParamDescr.IsChildInfluence)
-                {
-                    for (int i = 0; i < _childs.Count; ++i)
-                    {
-                        CBaseParam child_val = _childs[i].GetParamValue(inParamDescr.Id);
-                        _gui_realization.OnWindowChange(_childs[i], inParamDescr.Id, child_val);
-                    }
-                }
+                OnWindowChange(inParamDescr, val);
             }
         }
 
@@ -168,29 +163,49 @@ namespace GUIBuilder
             CBaseParam val;
             if (!_params.TryGetValue(inParamDescr.Id, out val))
             {
-                //val = CBaseParam.CreateParam(inParamDescr.ParamType, null);
+                val = CBaseParam.CreateParam(inParamDescr.ParamType, null);
                 //_params.Add(inParamDescr.Id, val);
                 //_gui_realization.OnWindowChange(this, inParamDescr.Id, val);
             }
             return val;
         }
 
-        internal void Change(SWinKeyInfo inKeyInfo, ILogPrinter inLogger)
+        internal void CheckChanging(SWinKeyInfo inKeyInfo, ILogPrinter inLogger)
         {
             CWindowTypeDescr type_descr = _window_type_descrs.GetDescr(WindowType);
 
+            List<NamedId> unusing_params = new List<NamedId>(_params.Keys);
             foreach(SWindowParamDescr param_descr in type_descr)
             {
-                if(param_descr == SWindowParamDescr.Name)
+                if (param_descr == SWindowParamDescr.Name)
+                {
                     CheckParam(param_descr, new string[] { inKeyInfo.Name });
+                    unusing_params.Remove(param_descr.Id);
+                }
                 else
                 {
                     bool must_be = type_descr.IsMustBe(param_descr.Id);
-                    string[] a = Utils.TryGetParamsBySubKeyName(param_descr.Id.Name, inKeyInfo.WinKey, inLogger, must_be, CBaseParam.GetParamCount(param_descr.ParamType));
-                    if(a != null)
+                    string[] a = Utils.TryGetParamsByNameFromSubKey(param_descr.Id.Name, inKeyInfo.WinKey, inLogger, must_be, CBaseParam.GetParamCount(param_descr.ParamType));
+                    if (a != null)
+                    {
                         CheckParam(param_descr, a);
+                        unusing_params.Remove(param_descr.Id);
+                    }
                 }
             }
+
+            unusing_params.ForEach(id =>
+            {
+                _params.Remove(id);
+
+                SWindowParamDescr? pd = type_descr.GetWindowParamDescr(id);
+
+                if (pd.HasValue)
+                {
+                    CBaseParam def_val = CBaseParam.CreateParam(pd.Value.ParamType, null);
+                    OnWindowChange(pd.Value, def_val);
+                }
+            });
 
             IKey childs_key = inKeyInfo.WinKey.FindChildByName("Childs", StringComparison.InvariantCultureIgnoreCase);
             if (childs_key != null)
@@ -250,7 +265,7 @@ namespace GUIBuilder
 
                 new_childs.Add(window);
 
-                window.Change(window_key_info, inLogger);
+                window.CheckChanging(window_key_info, inLogger);
             }
 
             for (int i = 0; i < unused_windows_cache.Count; i++)

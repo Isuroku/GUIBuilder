@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="ArrayExt.cs" />
     <Compile Include="BaseWindow.cs" />
+    <Compile Include="Color.cs" />
     <Compile Include="EnumUtils.cs" />
     <Compile Include="GUIBuilder.cs" />
     <Compile Include="LevenshteinDistance.cs" />

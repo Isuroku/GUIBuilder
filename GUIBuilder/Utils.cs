@@ -34,7 +34,7 @@ namespace GUIBuilder
             return -1;
         }
 
-        public static string[] TryGetParamsBySubKeyName(string inKeyName, IKey inKey, ILogPrinter inLogger, bool inSubKeyMustBe, params int[] inParamCounts)
+        public static string[] TryGetParamsByNameFromSubKey(string inKeyName, IKey inKey, ILogPrinter inLogger, bool inSubKeyMustBe, params int[] inParamCounts)
         {
             IKey sub_key = inKey.FindChildByName(inKeyName, StringComparison.InvariantCultureIgnoreCase);
             if(sub_key == null)
@@ -61,7 +61,7 @@ namespace GUIBuilder
 
         public static string GetWindowNameFromKey(IKey inKey, string inDefaultName, ILogPrinter inLogger)
         {
-            string[] a = Utils.TryGetParamsBySubKeyName("Name", inKey, inLogger, false, 1);
+            string[] a = Utils.TryGetParamsByNameFromSubKey("Name", inKey, inLogger, false, 1);
             return a.Empty() ? inDefaultName : a[0];
         }
 
@@ -79,7 +79,7 @@ namespace GUIBuilder
 
                 info.Name = Utils.GetWindowNameFromKey(window_key, i.ToString(), inLogger);
 
-                string[] a = Utils.TryGetParamsBySubKeyName("Type", window_key, inLogger, true, 1);
+                string[] a = Utils.TryGetParamsByNameFromSubKey("Type", window_key, inLogger, true, 1);
                 if (a.Length > 0)
                 {
                     string stype = a[0];
