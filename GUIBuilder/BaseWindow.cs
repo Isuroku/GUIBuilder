@@ -116,13 +116,33 @@ namespace GUIBuilder
             if (_params.TryGetValue(inParamDescr.Id, out val))
             {
                 if (val.SetValue(inNewValue))
+                {
                     _gui_realization.OnWindowChange(this, inParamDescr.Id, val);
+
+                    if (inParamDescr.IsChildInfluence)
+                    {
+                        for (int i = 0; i < _childs.Count; ++i)
+                        {
+                            CBaseParam child_val = _childs[i].GetParamValue(inParamDescr.Id);
+                            _gui_realization.OnWindowChange(_childs[i], inParamDescr.Id, child_val);
+                        }
+                    }
+                }
             }
             else
             {
                 val = CBaseParam.CreateParam(inParamDescr.ParamType, inNewValue);
                 _params.Add(inParamDescr.Id, val);
                 _gui_realization.OnWindowChange(this, inParamDescr.Id, val);
+
+                if (inParamDescr.IsChildInfluence)
+                {
+                    for (int i = 0; i < _childs.Count; ++i)
+                    {
+                        CBaseParam child_val = _childs[i].GetParamValue(inParamDescr.Id);
+                        _gui_realization.OnWindowChange(_childs[i], inParamDescr.Id, child_val);
+                    }
+                }
             }
         }
 

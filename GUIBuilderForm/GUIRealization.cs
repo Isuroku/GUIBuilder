@@ -22,6 +22,9 @@ namespace GUIBuilderForm
         internal void SetBuilder(CGUIBuilder builder)
         {
             builder.WindowTypeDescrs.AddType(WindowTypes.Panel);
+
+            WindowTypes.Label.AddParams(WindowParams.Text, true);
+            builder.WindowTypeDescrs.AddType(WindowTypes.Label);
         }
 
         public void OnCreateWindow(IBaseWindow window)
@@ -29,24 +32,13 @@ namespace GUIBuilderForm
             if (window.WindowType.Id == uint.MaxValue)
                 return;
 
-            var panel = new Panel();
-
             Control pc;
             if (window.Parent == null || !_controls.TryGetValue(window.Parent.Id, out pc))
                 pc = _panel;
 
-            panel.Parent = pc;
+            var control = WindowFactory.Create(window, pc);
 
-            panel.Name = window.Name;
-
-            Rect rect = window.GetRect(true);
-            panel.Location = new Point((int)rect.left, (int)rect.top);
-            panel.Size = new Size((int)rect.Width, (int)rect.Hight);
-
-            //panel.BackColor = Color.Green;
-            //panel.ForeColor = Color.Yellow;
-
-            _controls.Add(window.Id, panel);
+            _controls.Add(window.Id, control);
         }
 
         public void OnDeleteWindow(IBaseWindow window)
@@ -86,6 +78,13 @@ namespace GUIBuilderForm
             {
                 Vector4 v4 = inNewParam.ToVector4();
                 pc.BackColor = Color.FromArgb((int)v4.w, (int)v4.x, (int)v4.y, (int)v4.z);
+            }
+            else if (inParamType == WindowParams.Text.Id)
+            {
+                if (window.WindowType == WindowTypes.Label.Id)
+                {
+                    pc.Text = inNewParam.ToString();
+                }
             }
         }
 

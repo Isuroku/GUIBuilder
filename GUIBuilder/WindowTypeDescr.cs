@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace GUIBuilder
 {
@@ -10,11 +8,13 @@ namespace GUIBuilder
     {
         public NamedId Id { get; private set; }
         public EBaseParamType ParamType { get; private set; }
+        public bool IsChildInfluence { get; private set; }
 
-        public SWindowParamDescr(uint inId, string inName, EBaseParamType inParamType)
+        public SWindowParamDescr(uint inId, string inName, EBaseParamType inParamType, bool inIsChildInfluence)
         {
             Id = new NamedId(inId, inName);
             ParamType = inParamType;
+            IsChildInfluence = inIsChildInfluence;
         }
 
         public override string ToString()
@@ -49,11 +49,11 @@ namespace GUIBuilder
             return !left.Equals(right);
         }
 
-        public static SWindowParamDescr Name = new SWindowParamDescr(uint.MaxValue - 1, "Name", EBaseParamType.String);
-        public static SWindowParamDescr Indent = new SWindowParamDescr(uint.MaxValue - 2, "Indent", EBaseParamType.PVector2);
-        public static SWindowParamDescr Shift = new SWindowParamDescr(uint.MaxValue - 3, "Shift", EBaseParamType.PVector2);
-        public static SWindowParamDescr Size = new SWindowParamDescr(uint.MaxValue - 4, "Size", EBaseParamType.PVector2);
-        public static SWindowParamDescr Color = new SWindowParamDescr(uint.MaxValue - 5, "Color", EBaseParamType.Vector4);
+        public static SWindowParamDescr Name = new SWindowParamDescr(uint.MaxValue - 1, "Name", EBaseParamType.String, false);
+        public static SWindowParamDescr Indent = new SWindowParamDescr(uint.MaxValue - 2, "Indent", EBaseParamType.PVector2, true);
+        public static SWindowParamDescr Shift = new SWindowParamDescr(uint.MaxValue - 3, "Shift", EBaseParamType.PVector2, true);
+        public static SWindowParamDescr Size = new SWindowParamDescr(uint.MaxValue - 4, "Size", EBaseParamType.PVector2, true);
+        public static SWindowParamDescr Color = new SWindowParamDescr(uint.MaxValue - 5, "Color", EBaseParamType.Vector4, false);
     }
 
     public class CWindowTypeDescr: IEnumerable<SWindowParamDescr>
@@ -72,9 +72,9 @@ namespace GUIBuilder
             AddParams(SWindowParamDescr.Color, false);
         }
 
-        public void AddParams(uint inId, string inName, EBaseParamType inParamType, bool inParamMustBe)
+        public void AddParams(uint inId, string inName, EBaseParamType inParamType, bool inParamMustBe, bool inIsChildInfluence)
         {
-            var p = new SWindowParamDescr(inId, inName, inParamType);
+            var p = new SWindowParamDescr(inId, inName, inParamType, inIsChildInfluence);
             AddParams(p, inParamMustBe);
         }
 
@@ -108,6 +108,38 @@ namespace GUIBuilder
                     return _params[i];
             }
             return null;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0}", Id);
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((CWindowTypeDescr)obj);
+        }
+
+        public bool Equals(CWindowTypeDescr other)
+        {
+            return Id == other.Id;
+        }
+
+        public static bool operator ==(CWindowTypeDescr left, CWindowTypeDescr right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(CWindowTypeDescr left, CWindowTypeDescr right)
+        {
+            return !left.Equals(right);
         }
     }
 
